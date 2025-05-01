@@ -134,3 +134,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# GitHub Copilot related files
+.copilot/
+CodeChunks.db
+semanticSymbols*
+copilotindices
+fileContentIndex/
+
+# Visual Studio temporary files
+.vs/

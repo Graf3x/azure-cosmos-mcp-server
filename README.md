@@ -50,34 +50,87 @@ COSMOS_CONTAINER_ID=
 
 ### Getting Started
 
-1. **Install Dependencies**  
-   Run the following command in the root folder to install all necessary dependencies:  
+1.  **Install Dependencies**  
+    Run the following command in the root folder to install all necessary dependencies:  
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
-2. **Build the Project**  
-   Compile the project by running:  
+2.  **Build the Project**  
+    Compile the project by running:  
 
-   ```bash
-   npm run build
-   ```
+    ```bash
+    npm run build
+    ```
 
-3. **Start the Server**  
-   Navigate to the `dist` folder and start the server:  
+3.  **Start the Server**  
+    Navigate to the `dist` folder and start the server:  
 
-   ```bash
-   npm start
-   ```
+    ```bash
+    npm start
+    ```
 
-4. **Confirmation Message**  
-   You should see the following message:  
+4.  **Confirmation Message**  
+    You should see the following message:  
 
-   ```text
-   Azure Cosmos DB Server running on stdio
-   ```
+    ```text
+    Azure Cosmos DB Server running on stdio
+    ```
 
+### Server-Sent Events (SSE) Endpoint
+
+The server exposes an SSE endpoint at `/sse` and a message endpoint for bidirectional communication.
+
+- **Connection:** When a client connects to `/sse`, it receives an initial message containing a unique message endpoint URL:
+  ```
+  event: endpoint
+  data: "http://host:port/message?sessionId=UNIQUE_SESSION_ID"
+  ```
+  The host and port are automatically determined from the client's connection.
+
+- **Message Handling:** 
+  - The server supports both SSE events for real-time updates and HTTP POST requests for bidirectional communication
+  - Handles JSON-RPC 2.0 messages including initialization, notifications, and tool requests
+  - Provides access to several tools for interacting with Azure Cosmos DB:
+    - Query container (SQL queries)
+    - Get items by ID
+    - Update items
+    - Put (insert/replace) items
+
+- **Real-time Updates:** Clients connected to the SSE endpoint receive:
+  - Tool responses as message events
+  - Keep-alive pings every 30 seconds
+  - Status updates and notifications
+- **Keep-Alive:** The connection is kept alive with periodic comment messages (`:`).
+
+### Docker Setup (Alternative)
+
+If you prefer using Docker:
+
+1.  **Build the Docker Image**
+    Make sure you have Docker installed and running. Then, build the image using the provided `Dockerfile`:
+
+    ```pwsh
+    # Replace 'your-image-name' with a name for your image
+    docker build -t your-image-name .
+    ```
+
+2.  **Run the Docker Container**
+    Run the container, passing your Azure Cosmos DB credentials as environment variables:
+
+    ```pwsh
+    docker run -it --rm `
+      -e COSMOSDB_URI="YOUR_COSMOSDB_URI" `
+      -e COSMOSDB_KEY="YOUR_COSMOSDB_KEY" `
+      -e COSMOS_DATABASE_ID="YOUR_DATABASE_ID" `
+      -e COSMOS_CONTAINER_ID="YOUR_CONTAINER_ID" `
+      -e PORT="8000" `
+      your-image-name
+    ```
+
+    Replace the placeholder values (`YOUR_...`) with your actual credentials.
+    Use PORT to define what port the tool should run on, default is 8000
 ### How to run it using VSCODE Insiders
 
 To use the Azure MCP with VS Code Insiders with GitHub Copilot Agent Mode, follow these instructions:
@@ -113,7 +166,8 @@ Open Claude Desktop and Navigate to File -> Settings -> Developer -> Edit Config
         "COSMOSDB_URI": "Your Cosmos DB Account URI",
         "COSMOSDB_KEY": "Your Cosmos DB KEY",
         "COSMOS_DATABASE_ID": "Your Database ID",
-        "COSMOS_CONTAINER_ID": "Vehicles"
+        "COSMOS_CONTAINER_ID": "Vehicles",
+        "PORT":"8000",
       }
     }
   }
@@ -124,6 +178,7 @@ Open Claude Desktop and Navigate to File -> Settings -> Developer -> Edit Config
 You should now have successfully configured the MCP server for Azure Cosmos DB with Claude Desktop. This setup allows you to seamlessly interact with Azure Cosmos DB through the MCP server as shown below.
 
 https://github.com/user-attachments/assets/ae3a14f3-9ca1-415d-8645-1c8367fd6943
+
 
 ## Contributing
 
